@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>米游社·流光上传</title>
+    <style>
+        /* ========== 完整样式 ========== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(145deg, #f0f5fa 0%, #e9f0f5 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+
+        .app-card {
+            width: 100%;
+            max-width: 480px;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border-radius: 42px;
+            box-shadow: 0 25px 50px -12px rgba(0, 20, 30, 0.25), inset 0 1px 2px rgba(255,255,255,0.6);
+            padding: 24px 20px;
+            border: 1px solid rgba(255,255,255,0.5);
+        }
+
+        .title-section {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+        .title-section h1 {
+            font-size: 28px;
+            font-weight: 620;
+            background: linear-gradient(115deg, #1E3A5F, #2B5A7A);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
+        .chip {
+            background: rgba(0,0,0,0.03);
+            backdrop-filter: blur(4px);
+            padding: 6px 14px;
+            border-radius: 40px;
+            font-size: 14px;
+            color: #1e3a5f;
+            border: 0.5px solid rgba(255,255,255,0.6);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+        }
+
+        .account-row {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .account-select {
+            flex: 1;
+            background: rgba(255,255,255,0.4);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,0.8);
+            border-radius: 34px;
+            padding: 0 18px;
+            font-size: 16px;
+            font-weight: 500;
+            color: #0a253b;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%232b5a7a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+            background-size: 18px;
+            cursor: pointer;
+            transition: all 0.2s;
+            height: 54px;
+            line-height: 54px;
+        }
+        .account-select:hover {
+            background-color: rgba(255,255,255,0.7);
+            border-color: white;
+        }
+        .icon-btn {
+            width: 54px;
+            height: 54px;
+            border-radius: 34px;
+            background: rgba(255,255,255,0.4);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: #1e3a5f;
+            cursor: pointer;
+            transition: all 0.15s;
+            user-select: none;
+        }
+        .icon-btn:hover {
+            background: rgba(255,255,255,0.8);
+            transform: scale(0.96);
+        }
+
+        .action-row {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        .primary-btn {
+            flex: 1;
+            height: 56px;
+            border-radius: 36px;
+            background: #1E3A5F;
+            border: none;
+            color: white;
+            font-size: 17px;
+            font-weight: 590;
+            letter-spacing: 0.2px;
+            box-shadow: 0 10px 18px -8px rgba(20, 60, 100, 0.4);
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .primary-btn:active {
+            transform: scale(0.97);
+            box-shadow: 0 5px 12px -5px #1e3a5f;
+        }
+        .secondary-btn {
+            flex: 1;
+            height: 56px;
+            border-radius: 36px;
+            background: rgba(255,255,255,0.3);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,0.7);
+            color: #1e3a5f;
+            font-size: 17px;
+            font-weight: 550;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .secondary-btn:active {
+            background: rgba(255,255,255,0.7);
+        }
+
+        .file-list {
+            background: rgba(255,255,255,0.25);
+            backdrop-filter: blur(4px);
+            border-radius: 28px;
+            padding: 16px 12px;
+            margin-bottom: 20px;
+            max-height: 340px;
+            overflow-y: auto;
+            border: 1px solid rgba(255,255,255,0.4);
+            box-shadow: inset 0 2px 6px rgba(0,0,0,0.02);
+        }
+        .file-item {
+            background: rgba(255,255,255,0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            padding: 14px 16px;
+            margin-bottom: 10px;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid rgba(255,255,255,0.9);
+            box-shadow: 0 6px 12px -8px rgba(0,20,30,0.2);
+            transition: all 0.2s;
+        }
+        .file-item:last-child {
+            margin-bottom: 0;
+        }
+        .file-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .file-icon {
+            font-size: 28px;
+            width: 40px;
+            text-align: center;
+            filter: drop-shadow(0 4px 4px rgba(0,0,0,0.1));
+        }
+        .file-info {
+            flex: 1;
+        }
+        .file-name {
+            font-weight: 590;
+            font-size: 16px;
+            color: #0f2a40;
+            word-break: break-word;
+            line-height: 1.3;
+            margin-bottom: 4px;
+        }
+        .file-meta {
+            display: flex;
+            gap: 12px;
+            font-size: 13px;
+            color: #3d5e7a;
+        }
+        .file-status {
+            font-size: 13px;
+            font-weight: 500;
+            padding: 4px 10px;
+            border-radius: 40px;
+            background: rgba(0,0,0,0.04);
+            display: inline-block;
+        }
+        .status-wait { color: #4a6a85; background: rgba(0,0,0,0.02); }
+        .status-uploading { color: #c96f0e; background: rgba(255,170,50,0.15); }
+        .status-success { color: #1f8b4c; background: rgba(40,200,100,0.12); }
+        .status-fail { color: #c23b3b; background: rgba(220,60,60,0.1); }
+
+        .copy-btn {
+            background: white;
+            border: none;
+            border-radius: 34px;
+            padding: 8px 16px;
+            font-size: 13px;
+            font-weight: 560;
+            color: #1e3a5f;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+            border: 0.5px solid rgba(0,0,0,0.04);
+            margin-top: 10px;
+            align-self: flex-end;
+            cursor: pointer;
+            transition: 0.15s;
+        }
+        .copy-btn:active {
+            background: #f0f5fa;
+        }
+        .copy-btn:disabled {
+            opacity: 0.4;
+            pointer-events: none;
+        }
+
+        .bottom-bar {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-top: 8px;
+        }
+        .upload-btn {
+            flex: 2;
+            height: 64px;
+            border-radius: 42px;
+            background: linear-gradient(135deg, #1E3A5F, #2B5A7A);
+            border: none;
+            color: white;
+            font-size: 20px;
+            font-weight: 620;
+            letter-spacing: 0.5px;
+            box-shadow: 0 15px 25px -10px #0f2a40;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .upload-btn:active {
+            transform: scale(0.96);
+            box-shadow: 0 8px 18px -8px #0f2a40;
+        }
+        .global-copy {
+            flex: 1;
+            height: 64px;
+            border-radius: 42px;
+            background: rgba(255,255,255,0.3);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,0.7);
+            color: #1e3a5f;
+            font-size: 16px;
+            font-weight: 560;
+            cursor: pointer;
+        }
+        .status-text {
+            text-align: center;
+            color: #3d5e7a;
+            font-size: 14px;
+            margin-top: 16px;
+            font-weight: 470;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.2);
+            backdrop-filter: blur(12px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: 0.2s;
+        }
+        .modal-overlay.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .modal-card {
+            width: 86%;
+            max-width: 380px;
+            background: rgba(255,255,255,0.75);
+            backdrop-filter: blur(30px);
+            border-radius: 44px;
+            padding: 28px 24px;
+            border: 1px solid rgba(255,255,255,0.7);
+            box-shadow: 0 40px 70px -20px rgba(0,10,20,0.4);
+        }
+        .modal-card h3 {
+            font-size: 24px;
+            font-weight: 600;
+            color: #0f2a40;
+            margin-bottom: 20px;
+        }
+        .modal-input {
+            width: 100%;
+            background: rgba(255,255,255,0.5);
+            border: 1px solid rgba(255,255,255,0.7);
+            border-radius: 34px;
+            padding: 16px 20px;
+            font-size: 16px;
+            margin-bottom: 16px;
+            resize: none;
+        }
+        .modal-error {
+            color: #c23b3b;
+            font-size: 14px;
+            margin-bottom: 16px;
+            min-height: 20px;
+        }
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+        .modal-btn {
+            padding: 12px 24px;
+            border-radius: 34px;
+            border: none;
+            font-weight: 560;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .modal-btn.primary {
+            background: #1E3A5F;
+            color: white;
+        }
+        .modal-btn.secondary {
+            background: rgba(0,0,0,0.05);
+            color: #1e3a5f;
+        }
+        .modal-btn:active {
+            transform: scale(0.96);
+        }
+
+        #file-input {
+            display: none;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/spark-md5/3.0.2/spark-md5.min.js"></script>
+</head>
+<body>
+    <div class="app-card">
+        <div class="title-section">
+            <h1>流光上传</h1>
+            <span class="chip">米游社·极简</span>
+        </div>
+
+        <!-- 账号管理 -->
+        <div class="account-row">
+            <select id="accountSelect" class="account-select"></select>
+            <div class="icon-btn" id="manageAccountsBtn">⚙️</div>
+        </div>
+
+        <!-- 文件操作 -->
+        <div class="action-row">
+            <button class="primary-btn" id="selectFilesBtn">📁 选择文件</button>
+            <button class="secondary-btn" id="clearListBtn">🗑️ 清空</button>
+        </div>
+
+        <!-- 文件列表容器 -->
+        <div id="fileList" class="file-list"></div>
+
+        <!-- 底部上传栏 -->
+        <div class="bottom-bar">
+            <button class="upload-btn" id="startUploadBtn">↑ 开始上传</button>
+            <button class="global-copy" id="copyAllBtn">📋 全部链接</button>
+        </div>
+        <div id="statusMessage" class="status-text">就绪</div>
+    </div>
+
+    <!-- 隐藏的文件输入 -->
+    <input type="file" id="file-input" multiple>
+
+    <!-- 账号管理弹窗 -->
+    <div id="modalOverlay" class="modal-overlay">
+        <div class="modal-card">
+            <h3>账号管理</h3>
+            <select id="modalAccountSelect" class="account-select" style="margin-bottom: 20px;"></select>
+            <textarea id="cookieInput" class="modal-input" placeholder="粘贴包含 ltoken 和 ltuid 的文本" rows="3"></textarea>
+            <div id="modalError" class="modal-error"></div>
+            <div class="modal-actions">
+                <button class="modal-btn secondary" id="deleteAccountBtn">删除</button>
+                <button class="modal-btn primary" id="addAccountBtn">添加</button>
+                <button class="modal-btn secondary" id="closeModalBtn">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ========== 完整脚本 ==========
+        (function() {
+            const PRESET_COOKIES = {
+                "278378914": "_MHYUUID=c062586f-eef1-455a-b18e-c7f7d887c0dd; DEVICEFP_SEED_ID=994d72e0049cd10f; DEVICEFP_SEED_TIME=1771566922496; DEVICEFP=38d8165c7465a; MIHOYO_LOGIN_PLATFORM_LIFECYCLE_ID=6e2972d597; cookie_token_v2=v2_5C7dY-aOKRn4XO9_aq0B5wn4djLV0QgJ30vubMjhwSXmCoK2SisLbN7nCsaizqRWSdEefuw8kLiqOyThnikueiXQI8OOMzNIqEMOzXWPaukenj53QQfYr0YOoAbahQ5pox6tVqWJvJgq8Ene5wA=.CAE=; account_mid_v2=0atmuy17y5_mhy; account_id_v2=278378914; ltoken_v2=v2_QyYlAqFTlbUKZfKVKpZUXsPNPRuKBGDxgXXN9AuNwqhXqAB2rAh8za-UI7eNhSujbZfgcTim9U4R5ugFd-yiWaWxfgUfqdj7Td8zzyR-1Y-B6BRm1eibb_VXhw0ktW6v3Q-bMLmdHTn6sFWPyA==.CAE=; ltmid_v2=0atmuy17y5_mhy; ltuid_v2=278378914; cookie_token=E0mzrQgD20wMo693wiCS3Cs5z5P6hIxIgEr3EUsR; account_id=278378914; ltoken=UTYTJNHvQ2c40Zcni7oaTGttnDXO4vy9xzMRItKn; ltuid=278378914",
+                "283219283": "_MHYUUID=c062586f-eef1-455a-b18e-c7f7d887c0dd; DEVICEFP_SEED_ID=994d72e0049cd10f; DEVICEFP_SEED_TIME=1771566922496; DEVICEFP=38d8165c7465a; MIHOYO_LOGIN_PLATFORM_LIFECYCLE_ID=ae49f3304c; cookie_token_v2=v2_Jd8FTZ59-6y7OyHO2eTCx6Qx_o46orahiJ2G-OXg1VTwijOQr6hzGAv99q8OHu9M3Xik7ZEIig6UuFyZYeryS2nXG9YCwbKvhbyfJ51uhMLwOvbNUtgTrmYHEwceU4dam3uQWI1-ZeuAKlugE5Y=.CAE=; account_mid_v2=03mos6u654_mhy; account_id_v2=283219283; ltoken_v2=v2_T0NB-rjnEBDbZAmU-IXH4oGrjUdA9oJ1C_EkTTUXpnGTVlHP98UXERmrI1s8_dEO-mRV36g3Lz7T3B1XPAvTclqvr1W1pWT_V23YJiAyO0pZQllJCq0zQzI_v39sJGxXj6qrSKszCcmfzBjh2oM=.CAE=; ltmid_v2=03mos6u654_mhy; ltuid_v2=283219283; cookie_token=Zex9xEPEkkIp1O4NA4nG5gON0hQF9jD6lVBcb2Ee; account_id=283219283; ltoken=l95DyU1T2DVIlXACBfl7RaYOcACLA0KzDt6cISKU; ltuid=283219283"
+            };
+
+            const STORAGE_KEY = 'miyoushe_accounts';
+            let accounts = {};
+            let currentAccount = null;
+            let filesArray = [];
+            let isUploading = false;
+
+            // DOM 元素
+            const accountSelect = document.getElementById('accountSelect');
+            const manageBtn = document.getElementById('manageAccountsBtn');
+            const selectFilesBtn = document.getElementById('selectFilesBtn');
+            const clearListBtn = document.getElementById('clearListBtn');
+            const startUploadBtn = document.getElementById('startUploadBtn');
+            const copyAllBtn = document.getElementById('copyAllBtn');
+            const fileListDiv = document.getElementById('fileList');
+            const statusMsg = document.getElementById('statusMessage');
+            const fileInput = document.getElementById('file-input');
+            const modalOverlay = document.getElementById('modalOverlay');
+            const modalAccountSelect = document.getElementById('modalAccountSelect');
+            const cookieInput = document.getElementById('cookieInput');
+            const modalError = document.getElementById('modalError');
+            const addAccountBtn = document.getElementById('addAccountBtn');
+            const deleteAccountBtn = document.getElementById('deleteAccountBtn');
+            const closeModalBtn = document.getElementById('closeModalBtn');
+
+            function loadAccounts() {
+                const stored = localStorage.getItem(STORAGE_KEY);
+                if (stored) {
+                    try { accounts = JSON.parse(stored); } catch { accounts = {}; }
+                }
+                for (let [ltuid, cookie] of Object.entries(PRESET_COOKIES)) {
+                    if (!accounts[ltuid]) accounts[ltuid] = cookie;
+                }
+                saveAccounts();
+            }
+            function saveAccounts() {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(accounts));
+                updateAccountSelectors();
+            }
+            function updateAccountSelectors() {
+                const ltuidList = Object.keys(accounts);
+                accountSelect.innerHTML = '';
+                modalAccountSelect.innerHTML = '';
+                ltuidList.forEach(ltuid => {
+                    accountSelect.appendChild(new Option(ltuid, ltuid));
+                    modalAccountSelect.appendChild(new Option(ltuid, ltuid));
+                });
+                if (!currentAccount || !accounts[currentAccount]) {
+                    currentAccount = ltuidList[0] || null;
+                }
+                if (currentAccount) {
+                    accountSelect.value = currentAccount;
+                    modalAccountSelect.value = currentAccount;
+                }
+            }
+
+            function formatFileSize(bytes) {
+                if (bytes < 1024) return bytes + ' B';
+                if (bytes < 1048576) return (bytes/1024).toFixed(1) + ' KB';
+                if (bytes < 1073741824) return (bytes/1048576).toFixed(1) + ' MB';
+                return (bytes/1073741824).toFixed(1) + ' GB';
+            }
+
+            function extractLtokenLtuid(text) {
+                const ltokenMatch = text.match(/ltoken=([^;\s]+)/);
+                const ltuidMatch = text.match(/ltuid=([^;\s]+)/);
+                return {
+                    ltoken: ltokenMatch ? ltokenMatch[1] : null,
+                    ltuid: ltuidMatch ? ltuidMatch[1] : null
+                };
+            }
+
+            function renderFileList() {
+                if (filesArray.length === 0) {
+                    fileListDiv.innerHTML = '<div style="padding: 30px 0; text-align: center; color: #5f7d9c;">✨ 暂无文件，点击选择文件</div>';
+                    return;
+                }
+                let html = '';
+                filesArray.forEach((item, index) => {
+                    const statusClass = 
+                        item.status === 'success' ? 'status-success' :
+                        item.status === 'uploading' ? 'status-uploading' :
+                        item.status === 'fail' ? 'status-fail' : 'status-wait';
+                    const statusText = 
+                        item.status === 'success' ? '成功' :
+                        item.status === 'uploading' ? '上传中' :
+                        item.status === 'fail' ? '失败' : '等待';
+                    const size = formatFileSize(item.size);
+                    const showCopy = item.status === 'success' && item.url;
+                    html += `
+                        <div class="file-item" data-index="${index}">
+                            <div class="file-row">
+                                <div class="file-icon">📄</div>
+                                <div class="file-info">
+                                    <div class="file-name">${item.name}</div>
+                                    <div class="file-meta">
+                                        <span>${size}</span>
+                                        <span class="file-status ${statusClass}">${statusText}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            ${showCopy ? `<button class="copy-btn" data-url="${item.url}" data-index="${index}">🔗 复制链接</button>` : ''}
+                            ${item.status === 'fail' ? `<div style="color:#c23b3b; font-size:13px; margin-top:6px;">${item.error || '未知错误'}</div>` : ''}
+                        </div>
+                    `;
+                });
+                fileListDiv.innerHTML = html;
+                document.querySelectorAll('.copy-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        copyToClipboard(btn.dataset.url);
+                        btn.textContent = '✓ 已复制';
+                        setTimeout(() => btn.textContent = '🔗 复制链接', 1500);
+                    });
+                });
+            }
+
+            async function copyToClipboard(text) {
+                try {
+                    await navigator.clipboard.writeText(text);
+                } catch {
+                    const textarea = document.createElement('textarea');
+                    textarea.value = text;
+                    document.body.appendChild(textarea);
+                    textarea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textarea);
+                }
+            }
+
+            function setStatus(text) {
+                statusMsg.textContent = text;
+            }
+
+            // 文件选择
+            selectFilesBtn.addEventListener('click', () => fileInput.click());
+            fileInput.addEventListener('change', (e) => {
+                const selected = Array.from(e.target.files);
+                for (let file of selected) {
+                    if (!filesArray.some(f => f.name === file.name && f.size === file.size)) {
+                        filesArray.push({ file, name: file.name, size: file.size, status: 'wait', url: null, error: null });
+                    }
+                }
+                renderFileList();
+                fileInput.value = '';
+                setStatus(`已添加 ${selected.length} 个文件`);
+            });
+
+            clearListBtn.addEventListener('click', () => {
+                if (isUploading) return alert('上传进行中，请稍后');
+                filesArray = [];
+                renderFileList();
+                setStatus('列表已清空');
+            });
+
+            // 账号管理弹窗
+            manageBtn.addEventListener('click', () => {
+                modalError.textContent = '';
+                cookieInput.value = '';
+                modalAccountSelect.value = currentAccount;
+                modalOverlay.classList.add('show');
+            });
+            closeModalBtn.addEventListener('click', () => modalOverlay.classList.remove('show'));
+            modalOverlay.addEventListener('click', (e) => { if (e.target === modalOverlay) modalOverlay.classList.remove('show'); });
+
+            addAccountBtn.addEventListener('click', () => {
+                const text = cookieInput.value.trim();
+                if (!text) return modalError.textContent = '请输入内容';
+                const { ltoken, ltuid } = extractLtokenLtuid(text);
+                if (!ltoken || !ltuid) return modalError.textContent = '未找到 ltoken 或 ltuid';
+                if (accounts[ltuid]) return modalError.textContent = `账号 ${ltuid} 已存在`;
+                accounts[ltuid] = text;
+                saveAccounts();
+                currentAccount = ltuid;
+                accountSelect.value = currentAccount;
+                modalAccountSelect.value = currentAccount;
+                cookieInput.value = '';
+                modalError.textContent = '';
+                setStatus(`账号 ${ltuid} 已添加`);
+            });
+
+            deleteAccountBtn.addEventListener('click', () => {
+                const selected = modalAccountSelect.value;
+                if (!selected) return;
+                if (PRESET_COOKIES[selected]) return modalError.textContent = '预设账号不可删除';
+                if (accounts[selected]) {
+                    delete accounts[selected];
+                    saveAccounts();
+                    if (currentAccount === selected) {
+                        const keys = Object.keys(accounts);
+                        currentAccount = keys[0] || null;
+                        if (currentAccount) accountSelect.value = currentAccount;
+                    }
+                    modalAccountSelect.value = currentAccount;
+                    setStatus(`账号 ${selected} 已删除`);
+                }
+            });
+
+            accountSelect.addEventListener('change', (e) => { currentAccount = e.target.value; });
+
+            // 上传单个文件（请求后端 API）
+            async function uploadSingleFile(item) {
+                const formData = new FormData();
+                formData.append('file', item.file);
+                formData.append('cookie', accounts[currentAccount]);
+
+                const resp = await fetch('/api/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                if (!resp.ok) throw new Error(`上传失败: ${resp.status}`);
+                const result = await resp.json();
+                if (!result.success) throw new Error(result.error);
+                return result.url;
+            }
+
+            async function startUpload() {
+                if (isUploading) return;
+                if (!currentAccount) return setStatus('请先选择账号');
+                if (filesArray.length === 0) return setStatus('没有文件可上传');
+
+                isUploading = true;
+                startUploadBtn.disabled = true;
+                copyAllBtn.disabled = true;
+                setStatus('上传中...');
+
+                for (let i = 0; i < filesArray.length; i++) {
+                    const item = filesArray[i];
+                    if (item.status === 'success') continue;
+                    item.status = 'uploading';
+                    renderFileList();
+                    try {
+                        const url = await uploadSingleFile(item);
+                        item.status = 'success';
+                        item.url = url;
+                        item.error = null;
+                    } catch (err) {
+                        item.status = 'fail';
+                        item.error = err.message || '上传异常';
+                    }
+                    renderFileList();
+                }
+
+                isUploading = false;
+                startUploadBtn.disabled = false;
+                copyAllBtn.disabled = false;
+                setStatus('上传完成');
+            }
+
+            startUploadBtn.addEventListener('click', startUpload);
+
+            copyAllBtn.addEventListener('click', async () => {
+                const urls = filesArray.filter(f => f.status === 'success' && f.url).map(f => f.url);
+                if (urls.length === 0) return setStatus('暂无成功链接');
+                await copyToClipboard(urls.join('\n'));
+                setStatus(`已复制 ${urls.length} 个链接`);
+                setTimeout(() => setStatus('就绪'), 1500);
+            });
+
+            // 启动
+            loadAccounts();
+            updateAccountSelectors();
+            renderFileList();
+            setStatus('就绪');
+        })();
+    </script>
+</body>
+</html>
