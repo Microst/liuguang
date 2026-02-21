@@ -27,58 +27,51 @@ jobs:
           pip install --user --upgrade cython virtualenv
           pip install --user buildozer
 
-      # 创建 buildozer.spec 并配置（纯 WebView 应用）
+      # 创建 buildozer.spec 并配置
       - name: Create buildozer.spec
         run: |
           buildozer init
+          # 显示原始 spec 文件（调试）
+          echo "=== Original buildozer.spec ==="
+          cat buildozer.spec
+          echo "================================"
+
+          # 修改配置
           sed -i 's/^package.name = .*/package.name = miyousheuploader/' buildozer.spec
           sed -i 's/^package.domain = .*/package.domain = com.example/' buildozer.spec
           sed -i 's/^source.dir = .*/source.dir = ./' buildozer.spec
-          # 清空 requirements（不需要 Python 库）
           sed -i 's/^requirements = .*/requirements = /' buildozer.spec
-          # 设置 bootstrap 为 webview
           sed -i 's/^bootstrap = .*/bootstrap = webview/' buildozer.spec
-          # 设置权限（只需要 INTERNET，如果需要从手机存储读取文件可添加其他权限）
           sed -i 's/^android.permissions = .*/android.permissions = INTERNET/' buildozer.spec
-          # 包含 HTML/CSS/JS 文件
           echo "source.include_exts = py,png,jpg,kv,atlas,html,css,js" >> buildozer.spec
-          # 设置 WebView 加载的本地 URL（指向 index.html）
-          echo "android.entrypoint = org.kivy.android.PythonActivity" >> buildozer.spec
-          echo "android.launcher = org.kivy.android.PythonActivityLauncher" >> buildozer.spec
-          # 设置安卓版本
           echo "android.api = 30" >> buildozer.spec
           echo "android.minapi = 21" >> buildozer.spec
           echo "android.build_tools = 34.0.0" >> buildozer.spec
           echo "android.accept_sdk_license = True" >> buildozer.spec
           echo "android.accept_sdk_license_preview = True" >> buildozer.spec
-          # 告诉 Buildozer 我们的主活动是 WebView 活动（关键）
-          echo "android.gradle_dependencies = 'org.kivy:python-for-android:2023.07.31'" >> buildozer.spec
-          # 设置应用的图标等可选
-          # echo "icon.filename = %(source.dir)s/icon.png" >> buildozer.spec
+
+          # 显示修改后的 spec 文件
+          echo "=== Modified buildozer.spec ==="
+          cat buildozer.spec
+          echo "================================"
 
       # 手动安装 Android SDK 和 build-tools，并复制到 Buildozer 缓存目录
       - name: Install Android SDK and build-tools
         run: |
           export ANDROID_HOME=$HOME/android-sdk
           mkdir -p $ANDROID_HOME
-          # 下载并解压命令行工具（放到 tools 目录，符合 Buildozer 的预期）
           wget -q https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O cmdline-tools.zip
           unzip -q cmdline-tools.zip -d $ANDROID_HOME
           mv $ANDROID_HOME/cmdline-tools $ANDROID_HOME/tools
           export PATH=$PATH:$ANDROID_HOME/tools/bin
-          # 自动接受所有 SDK 许可证（包括预览版）
           yes | sdkmanager --licenses --sdk_root=$ANDROID_HOME > /dev/null 2>&1 || true
-          # 安装稳定版 build-tools 34.0.0 和 platform-tools
           sdkmanager "build-tools;34.0.0" "platform-tools" --sdk_root=$ANDROID_HOME
-          # 将安装好的 SDK 复制到 Buildozer 默认的缓存路径
           mkdir -p /home/runner/.buildozer/android/platform
           cp -r $ANDROID_HOME /home/runner/.buildozer/android/platform/android-sdk
-          # 将 aidl 所在目录添加到 PATH
           echo "$ANDROID_HOME/build-tools/34.0.0" >> $GITHUB_PATH
 
       - name: Build with Buildozer
         run: |
-          # 设置环境变量，确保 Buildozer 使用我们准备好的 SDK
           export ANDROID_HOME=/home/runner/.buildozer/android/platform/android-sdk
           buildozer android debug
 
