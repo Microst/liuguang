@@ -31,19 +31,26 @@ jobs:
       - name: Create buildozer.spec
         run: |
           buildozer init
+          # 显示原始 spec 文件，用于调试
+          echo "=== Original buildozer.spec ==="
+          cat buildozer.spec
+          # 进行替换
           sed -i 's/^package.name = .*/package.name = miyousheuploader/' buildozer.spec
           sed -i 's/^package.domain = .*/package.domain = com.example/' buildozer.spec
           sed -i 's/^source.dir = .*/source.dir = ./' buildozer.spec
-          # 修改 requirements 行，只保留 Flask 相关
           sed -i 's/^requirements = .*/requirements = python3,flask,flask-cors,requests/' buildozer.spec
-          # 设置 bootstrap 为 webview，避免引入不必要的依赖
+          # 关键：修改 bootstrap 为 webview
           sed -i 's/^bootstrap = .*/bootstrap = webview/' buildozer.spec
           sed -i 's/^android.permissions = .*/android.permissions = INTERNET/' buildozer.spec
+          # 添加额外配置
           echo "android.api = 30" >> buildozer.spec
           echo "android.minapi = 21" >> buildozer.spec
           echo "android.build_tools = 34.0.0" >> buildozer.spec
           echo "android.accept_sdk_license = True" >> buildozer.spec
           echo "android.accept_sdk_license_preview = True" >> buildozer.spec
+          # 显示最终 spec 文件
+          echo "=== Final buildozer.spec ==="
+          cat buildozer.spec
 
       # 手动安装 Android SDK 和 build-tools，并复制到 Buildozer 缓存目录
       - name: Install Android SDK and build-tools
