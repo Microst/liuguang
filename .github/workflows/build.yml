@@ -1,4 +1,4 @@
-name: Build APK with Buildozer
+name: Build APK with Buildozer (WebView)
 
 on:
   push:
@@ -27,30 +27,34 @@ jobs:
           pip install --user --upgrade cython virtualenv
           pip install --user buildozer
 
-      # 创建 buildozer.spec 并配置
+      # 创建 buildozer.spec 并配置（纯 WebView 应用）
       - name: Create buildozer.spec
         run: |
           buildozer init
-          # 显示原始 spec 文件，用于调试
-          echo "=== Original buildozer.spec ==="
-          cat buildozer.spec
-          # 进行替换
           sed -i 's/^package.name = .*/package.name = miyousheuploader/' buildozer.spec
           sed -i 's/^package.domain = .*/package.domain = com.example/' buildozer.spec
           sed -i 's/^source.dir = .*/source.dir = ./' buildozer.spec
-          sed -i 's/^requirements = .*/requirements = python3,flask,flask-cors,requests/' buildozer.spec
-          # 关键：修改 bootstrap 为 webview
+          # 清空 requirements（不需要 Python 库）
+          sed -i 's/^requirements = .*/requirements = /' buildozer.spec
+          # 设置 bootstrap 为 webview
           sed -i 's/^bootstrap = .*/bootstrap = webview/' buildozer.spec
+          # 设置权限（只需要 INTERNET，如果需要从手机存储读取文件可添加其他权限）
           sed -i 's/^android.permissions = .*/android.permissions = INTERNET/' buildozer.spec
-          # 添加额外配置
+          # 包含 HTML/CSS/JS 文件
+          echo "source.include_exts = py,png,jpg,kv,atlas,html,css,js" >> buildozer.spec
+          # 设置 WebView 加载的本地 URL（指向 index.html）
+          echo "android.entrypoint = org.kivy.android.PythonActivity" >> buildozer.spec
+          echo "android.launcher = org.kivy.android.PythonActivityLauncher" >> buildozer.spec
+          # 设置安卓版本
           echo "android.api = 30" >> buildozer.spec
           echo "android.minapi = 21" >> buildozer.spec
           echo "android.build_tools = 34.0.0" >> buildozer.spec
           echo "android.accept_sdk_license = True" >> buildozer.spec
           echo "android.accept_sdk_license_preview = True" >> buildozer.spec
-          # 显示最终 spec 文件
-          echo "=== Final buildozer.spec ==="
-          cat buildozer.spec
+          # 告诉 Buildozer 我们的主活动是 WebView 活动（关键）
+          echo "android.gradle_dependencies = 'org.kivy:python-for-android:2023.07.31'" >> buildozer.spec
+          # 设置应用的图标等可选
+          # echo "icon.filename = %(source.dir)s/icon.png" >> buildozer.spec
 
       # 手动安装 Android SDK 和 build-tools，并复制到 Buildozer 缓存目录
       - name: Install Android SDK and build-tools
