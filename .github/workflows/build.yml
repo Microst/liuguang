@@ -37,9 +37,26 @@ jobs:
           sed -i 's/^android.permissions = .*/android.permissions = INTERNET/' buildozer.spec
           echo "android.api = 30" >> buildozer.spec
           echo "android.minapi = 21" >> buildozer.spec
-          echo "android.build_tools = 34.0.0" >> buildozer.spec          # 指定稳定版 build-tools
+          echo "android.build_tools = 34.0.0" >> buildozer.spec
           echo "android.accept_sdk_license = True" >> buildozer.spec
-          echo "android.accept_sdk_license_preview = True" >> buildozer.spec   # 额外接受预览版许可证
+          echo "android.accept_sdk_license_preview = True" >> buildozer.spec
+
+      # 手动安装稳定版 build-tools 34.0.0，并接受所有许可证
+      - name: Install Android SDK and build-tools
+        run: |
+          export ANDROID_HOME=$HOME/android-sdk
+          mkdir -p $ANDROID_HOME
+          # 下载并解压命令行工具
+          wget -q https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O cmdline-tools.zip
+          unzip -q cmdline-tools.zip -d $ANDROID_HOME/cmdline-tools
+          mv $ANDROID_HOME/cmdline-tools/cmdline-tools $ANDROID_HOME/cmdline-tools/latest
+          export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin
+          # 自动接受所有 SDK 许可证（包括预览版）
+          yes | sdkmanager --licenses --sdk_root=$ANDROID_HOME > /dev/null 2>&1 || true
+          # 安装稳定版 build-tools 34.0.0
+          sdkmanager "build-tools;34.0.0" --sdk_root=$ANDROID_HOME
+          # 将 aidl 所在目录添加到 PATH（确保 Buildozer 能找到）
+          echo "$ANDROID_HOME/build-tools/34.0.0" >> $GITHUB_PATH
 
       - name: Build with Buildozer
         run: |
