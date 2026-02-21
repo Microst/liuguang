@@ -37,8 +37,9 @@ jobs:
           sed -i 's/^android.permissions = .*/android.permissions = INTERNET/' buildozer.spec
           echo "android.api = 30" >> buildozer.spec
           echo "android.minapi = 21" >> buildozer.spec
-          echo "android.gradle_dependencies = 'org.kivy:python-for-android:2023.07.31'" >> buildozer.spec
+          echo "android.build_tools = 34.0.0" >> buildozer.spec          # 指定稳定版 build-tools
           echo "android.accept_sdk_license = True" >> buildozer.spec
+          echo "android.accept_sdk_license_preview = True" >> buildozer.spec   # 额外接受预览版许可证
 
       - name: Build with Buildozer
         run: |
