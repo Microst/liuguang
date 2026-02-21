@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04   # 切换到 22.04，更稳定
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -27,6 +27,7 @@ jobs:
           pip install --user --upgrade cython virtualenv
           pip install --user buildozer
 
+      # 创建 buildozer.spec 并配置
       - name: Create buildozer.spec
         run: |
           buildozer init
@@ -41,7 +42,7 @@ jobs:
           echo "android.accept_sdk_license = True" >> buildozer.spec
           echo "android.accept_sdk_license_preview = True" >> buildozer.spec
 
-      # 手动安装稳定版 build-tools 34.0.0，并接受所有许可证
+      # 手动安装 Android SDK 和 build-tools，并复制到 Buildozer 缓存目录
       - name: Install Android SDK and build-tools
         run: |
           export ANDROID_HOME=$HOME/android-sdk
@@ -53,13 +54,18 @@ jobs:
           export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin
           # 自动接受所有 SDK 许可证（包括预览版）
           yes | sdkmanager --licenses --sdk_root=$ANDROID_HOME > /dev/null 2>&1 || true
-          # 安装稳定版 build-tools 34.0.0
-          sdkmanager "build-tools;34.0.0" --sdk_root=$ANDROID_HOME
-          # 将 aidl 所在目录添加到 PATH（确保 Buildozer 能找到）
+          # 安装稳定版 build-tools 34.0.0 和 platform-tools
+          sdkmanager "build-tools;34.0.0" "platform-tools" --sdk_root=$ANDROID_HOME
+          # 将安装好的 SDK 复制到 Buildozer 默认的缓存路径
+          mkdir -p /home/runner/.buildozer/android/platform
+          cp -r $ANDROID_HOME /home/runner/.buildozer/android/platform/android-sdk
+          # 将 aidl 所在目录添加到 PATH
           echo "$ANDROID_HOME/build-tools/34.0.0" >> $GITHUB_PATH
 
       - name: Build with Buildozer
         run: |
+          # 设置环境变量，确保 Buildozer 使用我们准备好的 SDK
+          export ANDROID_HOME=/home/runner/.buildozer/android/platform/android-sdk
           buildozer android debug
 
       - name: Upload APK
