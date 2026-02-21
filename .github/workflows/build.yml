@@ -34,7 +34,8 @@ jobs:
           sed -i 's/^package.name = .*/package.name = miyousheuploader/' buildozer.spec
           sed -i 's/^package.domain = .*/package.domain = com.example/' buildozer.spec
           sed -i 's/^source.dir = .*/source.dir = ./' buildozer.spec
-          sed -i 's/^requirements = .*/requirements = python3,flask,flask-cors,requests/' buildozer.spec
+          # 修改 requirements 行，添加 pyjnius>=1.4.0 和 six
+          sed -i 's/^requirements = .*/requirements = python3,flask,flask-cors,requests,pyjnius>=1.4.0,six/' buildozer.spec
           sed -i 's/^android.permissions = .*/android.permissions = INTERNET/' buildozer.spec
           echo "android.api = 30" >> buildozer.spec
           echo "android.minapi = 21" >> buildozer.spec
